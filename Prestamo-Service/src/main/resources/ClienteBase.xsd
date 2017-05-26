@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified">
+    <xsd:element name="ClienteBase" type="ClienteBase"/>
+    <xsd:complexType name="ClienteBase">
+        <xsd:sequence>
+            <xsd:element name="cedula" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
