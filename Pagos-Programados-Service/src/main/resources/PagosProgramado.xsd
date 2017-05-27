@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified">
+    <xsd:include schemaLocation="Entidad.xsd"/>
+    <xsd:element name="PagosProgramados" type="PagosProgramados"/>
+    <xsd:element name="PagoProgramadoBase" type="PagoProgramadoBase"/>
+    <xsd:element name="PagoProgramado" type="PagoProgramado"/>
+    <xsd:element name="Estado" type="Estado"/>
+    <xsd:element name="Periodicidad" type="Periodicidad"/>
+    <xsd:simpleType name="Estado">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ACTIVO"/>
+            <xsd:enumeration value="RECHAZADO"/>
+            <xsd:enumeration value="PENDIENTE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="Periodicidad">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SEMANAL"/>
+            <xsd:enumeration value="QUINCENAL"/>
+            <xsd:enumeration value="MENSUAL"/>
+            <xsd:enumeration value="BIMENSUAL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PagoProgramadoBase">
+        <xsd:sequence>
+            <xsd:element name="referencia" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PagoProgramado">
+        <xsd:complexContent>
+            <xsd:extension base="PagoProgramadoBase">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:long"/>
+                    <xsd:element name="entidad" type="Entidad"/>
+                    <xsd:element name="nombre" type="xsd:string"/>
+                    <xsd:element name="estado" type="Estado"/>
+                    <xsd:element name="periodicidad" type="Periodicidad"/>
+                    <xsd:element name="fechaProximaCuota" type="xsd:date"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PagosProgramados">
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="pagosProgramados" type="PagoProgramado"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
