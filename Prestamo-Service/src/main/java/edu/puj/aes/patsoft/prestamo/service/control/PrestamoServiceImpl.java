@@ -47,24 +47,24 @@ public class PrestamoServiceImpl implements PrestamoServiceLocal {
         Random random = new Random();
         for (int i = 0; i < cedulas.length; i++) {
             List<Prestamo> prestamos = new LinkedList<>();
-            for (int j = 0; i < i + 1; j++) {
+            for (int j = 0; j < i + 1; j++) {
                 entidad = new Entidad();
-                entidad.setId(2000 + i);
-                entidad.setNombre(String.format("Empresa de servicios públicos %d", i));
+                entidad.setId(2000 + j);
+                entidad.setNombre(String.format("Empresa de servicios públicos %d", j));
                 entidad.setNumeroCuenta(String.valueOf(random.nextInt(1000000)));
 
                 prestamo = new Prestamo();
-                prestamo.setId(1000 + i);
+                prestamo.setId(1000 + j);
                 prestamo.setEntidad(entidad);
-                prestamo.setDiasMora(random.nextInt(i + 1));
-                prestamo.setNumCuotas(12 + i);
+                prestamo.setDiasMora(random.nextInt(j + 1));
+                prestamo.setNumCuotas(12 + j);
                 prestamo.setValorMora(new BigDecimal(random.nextInt(100000)));
                 prestamo.setValorProximaCuota(new BigDecimal(random.nextInt(1000000)));
                 prestamo.setValorSaldo(new BigDecimal(random.nextInt(10000000)));
                 try {
                     XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
                             newXMLGregorianCalendar(GregorianCalendar.from(
-                                    localDate.plus(i + 1, ChronoUnit.DAYS)
+                                    localDate.plus(j + 1, ChronoUnit.DAYS)
                                     .atStartOfDay(ZoneId.systemDefault())));
                     prestamo.setFechaProximaCuota(xcal);
                 } catch (DatatypeConfigurationException ex) {

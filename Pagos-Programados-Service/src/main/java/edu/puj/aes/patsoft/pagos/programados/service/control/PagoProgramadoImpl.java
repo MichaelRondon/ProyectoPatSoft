@@ -12,17 +12,22 @@ import edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramado;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramadoBase;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.PagosProgramados;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.Periodicidad;
+import edu.puj.aes.patsoft.fast.projects.utils.FilePersister;
 import edu.puj.aes.patsoft.pagos.programados.service.exception.PagosProgramadosException;
 import edu.puj.aes.patsoft.pagos.programados.service.util.PagosProgramadosUtil;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,14 +45,19 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class PagoProgramadoImpl implements PagoProgramadoLocal {
 
+    private static final FilePersister FILE_PERSISTER
+            = new FilePersister("persistence/pagos/programados");
+
+    private static final String FILE_NAME = "PAGOS_PROGRAMADOS";
+
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PagoProgramadoImpl.class);
 
-    private static final Map<String, List<PagoProgramado>> PAGO_PROGRAMADO = new ConcurrentHashMap<>();
+    private static final Map<String, List<PagoProgramado>> PAGOS_PROGRAMADOS = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
-
-        if (PAGO_PROGRAMADO.isEmpty()) {
+        cargar();
+        if (PAGOS_PROGRAMADOS.isEmpty()) {
             generarPagosProgramados();
         }
 
@@ -74,6 +84,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                 .findAny().orElseThrow(
                         () -> new PagosProgramadosException(String.format("No se encuentra el pago programado con referencia %s", input.getReferencia())));
         setSiguienteFechaPago(pagoProgramado);
+        guardar();
         return pagoProgramado;
     }
 
@@ -139,7 +150,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                 }
                 pagosProgramados.add(pagoProgramado);
             }
-            PAGO_PROGRAMADO.put(cedulas[i], pagosProgramados);
+            PAGOS_PROGRAMADOS.put(cedulas[i], pagosProgramados);
         }
     }
 
@@ -147,11 +158,11 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         PagosProgramados pagosProgramados = new PagosProgramados();
         String cedula = input.getCedula();
         LOGGER.info("Consulta de pagos programados con la cédula: {}", cedula);
-        if (!PAGO_PROGRAMADO.containsKey(cedula)) {
+        if (!PAGOS_PROGRAMADOS.containsKey(cedula)) {
             LOGGER.info("Se obtienen 0 pagos programados");
             return pagosProgramados;
         }
-        pagosProgramados.getPagosProgramados().addAll(PAGO_PROGRAMADO.get(cedula));
+        pagosProgramados.getPagosProgramados().addAll(PAGOS_PROGRAMADOS.get(cedula));
         LOGGER.info("Se obtienen {} pagos programados.", pagosProgramados.getPagosProgramados().size());
         return pagosProgramados;
 
@@ -168,4 +179,33 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         }
     }
 
+    private synchronized void guardar() {
+        if (PAGOS_PROGRAMADOS != null && !PAGOS_PROGRAMADOS.isEmpty()) {
+            HashMap<String, List<PagoProgramado>> map = new HashMap<>();
+            PAGOS_PROGRAMADOS.forEach((key, value) -> map.put(key, value));
+            FILE_PERSISTER.guardar(FILE_NAME, map);
+        }
+    }
+
+    private synchronized void cargar() {
+        HashMap cargar = FILE_PERSISTER.cargar(FILE_NAME, HashMap.class);
+        if (cargar != null && !cargar.isEmpty()) {
+            PAGOS_PROGRAMADOS.clear();
+            Set entrySet = cargar.entrySet();
+            entrySet.forEach(entry
+                    -> PAGOS_PROGRAMADOS.put((String) ((Entry) entry).getKey(),
+                            getPagosProgramados((List<LinkedHashMap>) ((Entry) entry).getValue())));
+        }
+    }
+
+    private List<PagoProgramado> getPagosProgramados(List<LinkedHashMap> linkedHashMaps) {
+        List<PagoProgramado> pagoProgramados = new LinkedList<>();
+        linkedHashMaps.forEach(linkedHashMap -> 
+                pagoProgramados.add(getPagoProgramado(linkedHashMap)));
+        return pagoProgramados;
+    }
+
+    private PagoProgramado getPagoProgramado(LinkedHashMap linkedHashMap) {
+        return FILE_PERSISTER.convert(PagoProgramado.class, linkedHashMap);
+    }
 }
