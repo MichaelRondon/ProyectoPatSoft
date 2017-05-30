@@ -9,8 +9,10 @@ import java.util.concurrent.CountDownLatch;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
+import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -48,7 +50,28 @@ public class ConnectionManager implements Latcher {
             consumer.setMessageListener(messageListener);
 
             connection.start();
-            latch.await();
+//            latch.await();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    public void publishMessage(String queueName, String message) throws
+            JMSException, InterruptedException {
+        Connection connection = null;
+        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+                connectionUri);
+        connection = connectionFactory.createConnection(login, password);
+        Session session = connection.createSession(false,
+                Session.AUTO_ACKNOWLEDGE);
+        try {
+            Queue queue = session.createQueue(queueName);
+
+            MessageProducer producer = session.createProducer(queue);
+            Message msg = session.createTextMessage(message);
+            producer.send(msg);
         } finally {
             if (session != null) {
                 session.close();

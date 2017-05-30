@@ -25,6 +25,12 @@
 <message name="NotificarPagoProgramadoResponse">
 <part name="parameters" element="tns:NotificarPagoProgramadoResponse"/>
 </message>
+<message name="NotificarPagoProgramadoByRef">
+<part name="parameters" element="tns:NotificarPagoProgramadoByRef"/>
+</message>
+<message name="NotificarPagoProgramadoByRefResponse">
+<part name="parameters" element="tns:NotificarPagoProgramadoByRefResponse"/>
+</message>
 <portType name="PagoProgramadoPort">
 <operation name="FindAllByCliente">
 <input xmlns:ns1="http://www.w3.org/2007/05/addressing/metadata" ns1:Action="findAllByCliente" message="tns:FindAllByCliente"/>
@@ -40,6 +46,11 @@
 <input xmlns:ns7="http://www.w3.org/2007/05/addressing/metadata" ns7:Action="notificarPagoProgramado" message="tns:NotificarPagoProgramado"/>
 <output xmlns:ns8="http://www.w3.org/2007/05/addressing/metadata" ns8:Action="http://www.patsoft.aes.puj.edu.co/PagoProgramadoPort/NotificarPagoProgramadoResponse" message="tns:NotificarPagoProgramadoResponse"/>
 <fault xmlns:ns9="http://www.w3.org/2007/05/addressing/metadata" message="tns:PagosProgramadosException" name="PagosProgramadosException" ns9:Action="http://www.patsoft.aes.puj.edu.co/PagoProgramadoPort/NotificarPagoProgramado/Fault/PagosProgramadosException"/>
+</operation>
+<operation name="NotificarPagoProgramadoByRef">
+<input xmlns:ns10="http://www.w3.org/2007/05/addressing/metadata" ns10:Action="notificarPagoProgramadoByRef" message="tns:NotificarPagoProgramadoByRef"/>
+<output xmlns:ns11="http://www.w3.org/2007/05/addressing/metadata" ns11:Action="http://www.patsoft.aes.puj.edu.co/PagoProgramadoPort/NotificarPagoProgramadoByRefResponse" message="tns:NotificarPagoProgramadoByRefResponse"/>
+<fault xmlns:ns12="http://www.w3.org/2007/05/addressing/metadata" message="tns:PagosProgramadosException" name="PagosProgramadosException" ns12:Action="http://www.patsoft.aes.puj.edu.co/PagoProgramadoPort/NotificarPagoProgramadoByRef/Fault/PagosProgramadosException"/>
 </operation>
 </portType>
 </definitions>

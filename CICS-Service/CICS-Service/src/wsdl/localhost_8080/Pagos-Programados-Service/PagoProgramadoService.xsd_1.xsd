@@ -10,23 +10,23 @@
 
 <xs:element name="NotificarPagoProgramado" type="tns:NotificarPagoProgramado"/>
 
+<xs:element name="NotificarPagoProgramadoByRef" type="tns:NotificarPagoProgramadoByRef"/>
+
+<xs:element name="NotificarPagoProgramadoByRefResponse" type="tns:NotificarPagoProgramadoByRefResponse"/>
+
 <xs:element name="NotificarPagoProgramadoResponse" type="tns:NotificarPagoProgramadoResponse"/>
 
 <xs:element name="PagosProgramadosException" type="tns:PagosProgramadosException"/>
 
-<xs:complexType name="FindAllByFechaProximoPagoNow">
-<xs:sequence/>
-</xs:complexType>
-
-<xs:complexType name="FindAllByFechaProximoPagoNowResponse">
+<xs:complexType name="NotificarPagoProgramadoByRef">
 <xs:sequence>
-<xs:element name="PagoProgramado" type="tns:PagosProgramados" form="qualified" minOccurs="0"/>
+<xs:element name="PagoProgramado" type="tns:PagoProgramadoBase" form="qualified" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="PagosProgramados">
+<xs:complexType name="PagoProgramadoBase">
 <xs:sequence>
-<xs:element name="pagosProgramados" type="tns:PagoProgramado" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="referencia" type="xs:string"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -46,12 +46,6 @@
 </xs:complexContent>
 </xs:complexType>
 
-<xs:complexType name="PagoProgramadoBase">
-<xs:sequence>
-<xs:element name="referencia" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
-
 <xs:complexType name="Entidad">
 <xs:sequence>
 <xs:element name="id" type="xs:long"/>
@@ -60,9 +54,31 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="NotificarPagoProgramadoByRefResponse">
+<xs:sequence>
+<xs:element name="PagoProgramado" type="tns:PagoProgramado" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="PagosProgramadosException">
 <xs:sequence>
 <xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="FindAllByFechaProximoPagoNow">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="FindAllByFechaProximoPagoNowResponse">
+<xs:sequence>
+<xs:element name="PagoProgramado" type="tns:PagosProgramados" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="PagosProgramados">
+<xs:sequence>
+<xs:element name="pagosProgramados" type="tns:PagoProgramado" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified">
+    <xsd:element name="transaccion" type="Transaccion"/>
+    <xsd:complexType name="Transaccion">
+        <xsd:sequence>
+            <xsd:element name="referencia" type="xsd:string"/>
+            <xsd:element name="valor" type="xsd:double" minOccurs="0"/>
+            <xsd:element name="mensajeError" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="exito" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

@@ -7,6 +7,7 @@ package edu.puj.aes.patsoft.cics.service;
 
 import edu.puj.aes.patsoft.cics.service.control.ConnectionManager;
 import edu.puj.aes.patsoft.cics.service.control.ConsumerMessageListener;
+import edu.puj.aes.patsoft.cics.service.control.PagoProgramadoProcessor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.JMSException;
@@ -20,7 +21,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             ConnectionManager connectionManager = new ConnectionManager("tcp://25.12.96.121:61616", "admin", "admin");
-            connectionManager.receiveAsyncMessages("pendientes", new ConsumerMessageListener("Customer", connectionManager));
+//            connectionManager.publishMessage("pendientes", "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+//                    + "<!DOCTYPE xml>\n"
+//                    + "<transaccion>\n"
+//                    + "  <referencia>92158</referencia>\n"
+//                    + "</transaccion>");
+            connectionManager.receiveAsyncMessages("pendientes", new ConsumerMessageListener(new PagoProgramadoProcessor(connectionManager), connectionManager));
         } catch (JMSException | InterruptedException ex) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
         }

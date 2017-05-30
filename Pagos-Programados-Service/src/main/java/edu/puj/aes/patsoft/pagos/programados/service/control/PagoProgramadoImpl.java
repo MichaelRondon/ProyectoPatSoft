@@ -19,6 +19,7 @@ import edu.puj.aes.patsoft.pagos.programados.service.util.PagosProgramadosUtil;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,13 +75,13 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
 
     @Override
     public PagoProgramado notificarPagoProgramado(PagoProgramadoBase input,
-            ClienteBase input2) throws PagosProgramadosException {
-        validarCliente(input2);
-        PagosProgramados consultarPagosProgramados = consultarPagosProgramados(input2);
+            ClienteBase clente) throws PagosProgramadosException {
+        validarCliente(clente);
+        PagosProgramados consultarPagosProgramados = consultarPagosProgramados(clente);
         if (consultarPagosProgramados.getPagosProgramados().isEmpty()) {
             PagosProgramadosUtil.getInstance().throwException(getClass(),
                     String.format("No se encuentra el pago programado. El cliente con cédula %s no tiene pagos programados",
-                            input2.getCedula()));
+                            clente.getCedula()));
         }
         PagoProgramado pagoProgramado = consultarPagosProgramados.getPagosProgramados().parallelStream()
                 .filter(pago -> pago.getReferencia().equals(input.getReferencia()))
@@ -88,6 +90,46 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         setSiguienteFechaPago(pagoProgramado);
         guardar();
         return pagoProgramado;
+    }
+
+    @Override
+    public PagoProgramado notificarPagoProgramado(PagoProgramadoBase input) throws PagosProgramadosException {
+        PagoProgramado pagoProgramado_ = null;
+        Collection<List<PagoProgramado>> values = PAGOS_PROGRAMADOS.values();
+        for (List<PagoProgramado> list : values) {
+            Optional<PagoProgramado> optional = list.parallelStream().filter(pagoProgramado
+                    -> Objects.nonNull(pagoProgramado.getReferencia()))
+                    .filter(pagoProgramado -> pagoProgramado.getReferencia().
+                    equals(input.getReferencia())).findAny();
+            if (optional.isPresent()) {
+                pagoProgramado_ = optional.get();
+            }
+        }
+        if (Objects.isNull(pagoProgramado_)) {
+            String errorMessage = String.format("No se encuentra el pago programado con la referencia: %s", input.getReferencia());
+            PagosProgramadosUtil.getInstance().throwException(getClass(), errorMessage);
+            return null;
+        }
+        setSiguienteFechaPago(pagoProgramado_);
+        guardar();
+        return pagoProgramado_;
+    }
+
+    @Override
+    public PagosProgramados findAllByFechaProximoPagoNow() {
+        PagosProgramados pagosProgramadosResp = new PagosProgramados();
+        List<PagoProgramado> pagosProgramados = pagosProgramadosResp.getPagosProgramados();
+        PAGOS_PROGRAMADOS.forEach((x, y)
+                -> {
+            y.parallelStream()
+                    //.forEach(p -> System.out.println("p: "+p.getFechaProximaCuota()));
+                    .filter(pagoProgramado
+                            -> Objects.nonNull(pagoProgramado.getFechaProximaCuota())
+                    ).filter(pagoProgramado
+                            -> xmlGregorianCalendarNow(pagoProgramado.
+                            getFechaProximaCuota())).forEach(pagosProgramados::add);
+        });
+        return pagosProgramadosResp;
     }
 
     private void setSiguienteFechaPago(PagoProgramado pagoProgramado) {
@@ -218,23 +260,6 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         fechaProximaCuota.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         pagoProgramado.setFechaProximaCuota(fechaProximaCuota);
         return pagoProgramado;
-    }
-
-    @Override
-    public PagosProgramados findAllByFechaProximoPagoNow() {
-        PagosProgramados pagosProgramadosResp = new PagosProgramados();
-        List<PagoProgramado> pagosProgramados = pagosProgramadosResp.getPagosProgramados();
-        PAGOS_PROGRAMADOS.forEach((x, y)
-                -> {
-            y.parallelStream()
-                    //.forEach(p -> System.out.println("p: "+p.getFechaProximaCuota()));
-                    .filter(pagoProgramado
-                            -> Objects.nonNull(pagoProgramado.getFechaProximaCuota())
-                    ).filter(pagoProgramado
-                            -> xmlGregorianCalendarNow(pagoProgramado.
-                            getFechaProximaCuota())).forEach(pagosProgramados::add);
-        });
-        return pagosProgramadosResp;
     }
 
     private boolean xmlGregorianCalendarNow(XMLGregorianCalendar gregorianCalendar) {

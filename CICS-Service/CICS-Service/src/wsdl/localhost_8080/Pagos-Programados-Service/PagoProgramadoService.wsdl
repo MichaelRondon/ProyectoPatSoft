@@ -38,6 +38,18 @@
 <soap:fault name="PagosProgramadosException" use="literal"/>
 </fault>
 </operation>
+<operation name="NotificarPagoProgramadoByRef">
+<soap:operation soapAction="notificarPagoProgramadoByRef"/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="PagosProgramadosException">
+<soap:fault name="PagosProgramadosException" use="literal"/>
+</fault>
+</operation>
 </binding>
 <service name="PagoProgramadoService">
 <port name="PagoProgramadoPort" binding="tns:PagoProgramadoPortBinding">

@@ -6,6 +6,7 @@
 package edu.puj.aes.patsoft.pagos.programados.service.boundary;
 
 import edu.puj.aes.patsoft.artifacts.cliente.ClienteBase;
+import edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramadoBase;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.PagosProgramados;
 import edu.puj.aes.patsoft.pagos.programados.service.artifacts.PagoProgramadoPort;
 import edu.puj.aes.patsoft.pagos.programados.service.control.PagoProgramadoLocal;
@@ -36,5 +37,10 @@ public class PagoProgramado implements PagoProgramadoPort {
     @Override
     public PagosProgramados findAllByFechaProximoPagoNow() throws PagosProgramadosException {
         return pagoProgramado.findAllByFechaProximoPagoNow();
+    }
+
+    @Override
+    public edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramado notificarPagoProgramadoByRef(PagoProgramadoBase input) throws PagosProgramadosException {
+        return pagoProgramado.notificarPagoProgramado(input);
     }
 }

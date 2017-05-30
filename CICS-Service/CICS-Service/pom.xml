@@ -83,6 +83,24 @@
                         <id>wsimport-generate-PagoProgramadoService</id>
                         <phase>generate-sources</phase>
                     </execution>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlFiles>
+                                <wsdlFile>localhost_8080/Pagos-Programados-Service/PagoProgramadoService.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <packageName>edu.puj.aes.patsoft.cics.service.pagos.programados.wsdl</packageName>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                            <wsdlLocation>http://localhost:8080/Pagos-Programados-Service/PagoProgramadoService?wsdl</wsdlLocation>
+                            <staleFile>${project.build.directory}/jaxws/stale/PagoProgramadoService_1.stale</staleFile>
+                        </configuration>
+                        <id>wsimport-generate-PagoProgramadoService_1</id>
+                        <phase>generate-sources</phase>
+                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -102,7 +120,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <webResources>
                         <resource>

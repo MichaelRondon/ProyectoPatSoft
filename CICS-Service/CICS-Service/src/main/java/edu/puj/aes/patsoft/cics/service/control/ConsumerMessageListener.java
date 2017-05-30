@@ -22,29 +22,27 @@ import org.slf4j.LoggerFactory;
  * @author acost
  */
 public class ConsumerMessageListener implements MessageListener {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerMessageListener.class);
-    private static final FilePersister FILE_PERSISTER = new FilePersister("");
-
-    private final String consumerName;
+    
+    private final MessageProcessor messageProcessor;
     private final Latcher latcher;
-
-    public ConsumerMessageListener(String consumerName, Latcher latcher) {
-        this.consumerName = consumerName;
+    
+    public ConsumerMessageListener(MessageProcessor messageProcessor, Latcher latcher) {
+        this.messageProcessor = messageProcessor;
         this.latcher = latcher;
     }
-
+    
     @Override
     public void onMessage(Message message) {
-        System.out.println("message: " + message);
-
+        LOGGER.info("Mensaje obtenido de la cola: {}" + message);
+        
         try {
             if (message instanceof MapMessage) {
                 System.out.println("messageType: MapMessage");
             } else if (message instanceof BytesMessage) {
                 System.out.println("messageType: BytesMessage");
                 BytesMessage bytesMessage = (BytesMessage) message;
-
                 byte[] data;
                 data = new byte[(int) bytesMessage.getBodyLength()];
                 bytesMessage.readBytes(data);
@@ -55,11 +53,11 @@ public class ConsumerMessageListener implements MessageListener {
                 System.out.println("messageType: TextMessage");
                 TextMessage textMessage = (TextMessage) message;
                 System.out.println("textMessage: " + textMessage.getText());
-
             } else {
                 System.out.println("NINGUNO");
             }
-
+            
+            messageProcessor.process(message);
             latcher.latchCountDown();
         } catch (JMSException /*| IOException*/ ex) {
             String errorMessage
