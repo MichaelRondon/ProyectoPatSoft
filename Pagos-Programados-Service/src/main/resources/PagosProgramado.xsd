@@ -38,6 +38,7 @@
                     <xsd:element name="estado" type="Estado"/>
                     <xsd:element name="periodicidad" type="Periodicidad"/>
                     <xsd:element name="fechaProximaCuota" type="xsd:date"/>
+                    <xsd:element name="valor" type="xsd:double"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

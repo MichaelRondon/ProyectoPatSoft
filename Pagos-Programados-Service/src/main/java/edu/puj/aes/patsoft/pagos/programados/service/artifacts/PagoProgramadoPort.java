@@ -35,4 +35,7 @@ public interface PagoProgramadoPort {
             @WebParam(name = "PagoProgramado", targetNamespace = "http://www.patsoft.aes.puj.edu.co", partName = "Input1") PagoProgramadoBase input,
             @WebParam(name = "Cliente", targetNamespace = "http://www.patsoft.aes.puj.edu.co", partName = "Input2") ClienteBase input2) throws PagosProgramadosException;
 
+    @WebMethod(operationName = "FindAllByFechaProximoPagoNow", action = "findAllByFechaProximoPagoNow")
+    @WebResult(name = "PagoProgramado", targetNamespace = "http://www.patsoft.aes.puj.edu.co", partName = "Output3")
+    public PagosProgramados findAllByFechaProximoPagoNow() throws PagosProgramadosException;
 }

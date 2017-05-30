@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,10 +59,5 @@ public class FilePersister {
             Logger.getLogger(FilePersister.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-    }
-
-    public <E> E convert(Class<E> e, LinkedHashMap linkedHashMap) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.convertValue(linkedHashMap, e);
     }
 }

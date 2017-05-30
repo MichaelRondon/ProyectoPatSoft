@@ -32,4 +32,9 @@ public class PagoProgramado implements PagoProgramadoPort {
     public edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramado notificarPagoProgramado(edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramadoBase input, ClienteBase input2) throws PagosProgramadosException {
         return pagoProgramado.notificarPagoProgramado(input, input2);
     }
+
+    @Override
+    public PagosProgramados findAllByFechaProximoPagoNow() throws PagosProgramadosException {
+        return pagoProgramado.findAllByFechaProximoPagoNow();
+    }
 }

@@ -13,6 +13,7 @@ import edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramadoBase;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.PagosProgramados;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.Periodicidad;
 import edu.puj.aes.patsoft.fast.projects.utils.FilePersister;
+import edu.puj.aes.patsoft.fast.projects.utils.JSONConverter;
 import edu.puj.aes.patsoft.pagos.programados.service.exception.PagosProgramadosException;
 import edu.puj.aes.patsoft.pagos.programados.service.util.PagosProgramadosUtil;
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.LoggerFactory;
@@ -110,6 +112,8 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
             XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
                     newXMLGregorianCalendar(GregorianCalendar.from(
                             localDate.atStartOfDay(ZoneId.systemDefault())));
+            xcal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+
             pagoProgramado.setFechaProximaCuota(xcal);
         } catch (DatatypeConfigurationException ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
@@ -118,6 +122,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
     }
 
     private void generarPagosProgramados() {
+        System.out.println("GENERAR!!");
         PagoProgramado pagoProgramado;
         String[] cedulas = new String[]{"987654321", "987654322", "987654323", "987654324", "987654325"};
         Entidad entidad;
@@ -138,12 +143,14 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                 pagoProgramado.setNombre(String.format("Pago programado n%d", j + 1));
                 pagoProgramado.setPeriodicidad(Periodicidad.SEMANAL);
                 pagoProgramado.setReferencia(String.valueOf(random.nextInt(100000)));
+                pagoProgramado.setValor(random.nextInt(1000000));
                 try {
                     XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
                             newXMLGregorianCalendar(GregorianCalendar.from(
                                     //                                    localDate.plus(i + 1, ChronoUnit.DAYS)
                                     localDate
                                             .atStartOfDay(ZoneId.systemDefault())));
+                    xcal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
                     pagoProgramado.setFechaProximaCuota(xcal);
                 } catch (DatatypeConfigurationException ex) {
                     Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
@@ -200,12 +207,51 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
 
     private List<PagoProgramado> getPagosProgramados(List<LinkedHashMap> linkedHashMaps) {
         List<PagoProgramado> pagoProgramados = new LinkedList<>();
-        linkedHashMaps.forEach(linkedHashMap -> 
-                pagoProgramados.add(getPagoProgramado(linkedHashMap)));
+        linkedHashMaps.forEach(linkedHashMap
+                -> pagoProgramados.add(getPagoProgramado(linkedHashMap)));
         return pagoProgramados;
     }
 
     private PagoProgramado getPagoProgramado(LinkedHashMap linkedHashMap) {
-        return FILE_PERSISTER.convert(PagoProgramado.class, linkedHashMap);
+        PagoProgramado pagoProgramado = JSONConverter.getInstance().convert(PagoProgramado.class, linkedHashMap);
+        XMLGregorianCalendar fechaProximaCuota = pagoProgramado.getFechaProximaCuota();
+        fechaProximaCuota.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+        pagoProgramado.setFechaProximaCuota(fechaProximaCuota);
+        return pagoProgramado;
+    }
+
+    @Override
+    public PagosProgramados findAllByFechaProximoPagoNow() {
+        PagosProgramados pagosProgramadosResp = new PagosProgramados();
+        List<PagoProgramado> pagosProgramados = pagosProgramadosResp.getPagosProgramados();
+        PAGOS_PROGRAMADOS.forEach((x, y)
+                -> {
+            y.parallelStream()
+                    //.forEach(p -> System.out.println("p: "+p.getFechaProximaCuota()));
+                    .filter(pagoProgramado
+                            -> Objects.nonNull(pagoProgramado.getFechaProximaCuota())
+                    ).filter(pagoProgramado
+                            -> xmlGregorianCalendarNow(pagoProgramado.
+                            getFechaProximaCuota())).forEach(pagosProgramados::add);
+        });
+        return pagosProgramadosResp;
+    }
+
+    private boolean xmlGregorianCalendarNow(XMLGregorianCalendar gregorianCalendar) {
+        try {
+            XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
+                    newXMLGregorianCalendar(
+                            GregorianCalendar.from(LocalDate.now().
+                                    atStartOfDay(ZoneId.systemDefault())));
+            xcal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+            LOGGER.info("Fecha a buscar: {}", xcal);
+
+            return gregorianCalendar.getYear() == xcal.getYear()
+                    && gregorianCalendar.getMonth() == xcal.getMonth()
+                    && gregorianCalendar.getDay() == xcal.getDay();
+        } catch (DatatypeConfigurationException ex) {
+            Logger.getLogger(PagoProgramadoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 }

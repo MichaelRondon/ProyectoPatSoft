@@ -23,4 +23,6 @@ public interface PagoProgramadoLocal {
 
     PagoProgramado notificarPagoProgramado(PagoProgramadoBase input,
             ClienteBase input2) throws PagosProgramadosException;
+    
+    PagosProgramados findAllByFechaProximoPagoNow();
 }

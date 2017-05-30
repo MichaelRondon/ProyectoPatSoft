@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is Metro/2.3.2-b608 (trunk-7979; 2015-01-21T12:50:19+0000) JAXWS-RI/2.2.11-b150120.1832 JAXWS-API/2.2.12 JAXB-RI/2.2.12-b141219.1637 JAXB-API/2.2.13-b141020.1521 svn-revision#unknown. --><xs:schema xmlns:tns="http://www.patsoft.aes.puj.edu.co" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://www.patsoft.aes.puj.edu.co">
+
+<xs:element name="FindAllByCliente" type="tns:FindAllByCliente"/>
+
+<xs:element name="FindAllByClienteResponse" type="tns:FindAllByClienteResponse"/>
+
+<xs:element name="FindAllByFechaProximoPagoNow" type="tns:FindAllByFechaProximoPagoNow"/>
+
+<xs:element name="FindAllByFechaProximoPagoNowResponse" type="tns:FindAllByFechaProximoPagoNowResponse"/>
+
+<xs:element name="NotificarPagoProgramado" type="tns:NotificarPagoProgramado"/>
+
+<xs:element name="NotificarPagoProgramadoResponse" type="tns:NotificarPagoProgramadoResponse"/>
+
+<xs:element name="PagosProgramadosException" type="tns:PagosProgramadosException"/>
+
+<xs:complexType name="FindAllByFechaProximoPagoNow">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="FindAllByFechaProximoPagoNowResponse">
+<xs:sequence>
+<xs:element name="PagoProgramado" type="tns:PagosProgramados" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="PagosProgramados">
+<xs:sequence>
+<xs:element name="pagosProgramados" type="tns:PagoProgramado" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="PagoProgramado">
+<xs:complexContent>
+<xs:extension base="tns:PagoProgramadoBase">
+<xs:sequence>
+<xs:element name="id" type="xs:long"/>
+<xs:element name="entidad" type="tns:Entidad"/>
+<xs:element name="nombre" type="xs:string"/>
+<xs:element name="estado" type="xs:string"/>
+<xs:element name="periodicidad" type="xs:string"/>
+<xs:element name="fechaProximaCuota" type="xs:date"/>
+<xs:element name="valor" type="xs:double"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="PagoProgramadoBase">
+<xs:sequence>
+<xs:element name="referencia" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="Entidad">
+<xs:sequence>
+<xs:element name="id" type="xs:long"/>
+<xs:element name="nombre" type="xs:string"/>
+<xs:element name="numeroCuenta" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="PagosProgramadosException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="NotificarPagoProgramado">
+<xs:sequence>
+<xs:element name="PagoProgramado" type="tns:PagoProgramadoBase" form="qualified" minOccurs="0"/>
+<xs:element name="Cliente" type="tns:ClienteBase" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="ClienteBase">
+<xs:sequence>
+<xs:element name="cedula" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="NotificarPagoProgramadoResponse">
+<xs:sequence>
+<xs:element name="PagoProgramado" type="tns:PagoProgramado" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="FindAllByCliente">
+<xs:sequence>
+<xs:element name="Cliente" type="tns:ClienteBase" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="FindAllByClienteResponse">
+<xs:sequence>
+<xs:element name="PagosProgramados" type="tns:PagosProgramados" form="qualified" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:simpleType name="Estado">
+<xs:restriction base="xs:string">
+<xs:enumeration value="ACTIVO"/>
+<xs:enumeration value="RECHAZADO"/>
+<xs:enumeration value="PENDIENTE"/>
+</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="Periodicidad">
+<xs:restriction base="xs:string">
+<xs:enumeration value="SEMANAL"/>
+<xs:enumeration value="QUINCENAL"/>
+<xs:enumeration value="MENSUAL"/>
+<xs:enumeration value="BIMENSUAL"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:schema>

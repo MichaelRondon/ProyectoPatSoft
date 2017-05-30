@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por la arquitectura JavaTM para la implantación de la referencia de enlace (JAXB) XML v2.2.8-b130911.1802 
 // Visite <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2017.05.27 a las 01:50:43 AM COT 
+// Generado el: 2017.05.29 a las 04:29:17 PM COT 
 //
 
 
@@ -32,6 +32,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="estado" type="{}Estado"/>
  *         &lt;element name="periodicidad" type="{}Periodicidad"/>
  *         &lt;element name="fechaProximaCuota" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         &lt;element name="valor" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -47,7 +48,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "nombre",
     "estado",
     "periodicidad",
-    "fechaProximaCuota"
+    "fechaProximaCuota",
+    "valor"
 })
 public class PagoProgramado
     extends PagoProgramadoBase
@@ -67,6 +69,7 @@ public class PagoProgramado
     @XmlElement(required = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar fechaProximaCuota;
+    protected double valor;
 
     /**
      * Obtiene el valor de la propiedad id.
@@ -202,6 +205,22 @@ public class PagoProgramado
      */
     public void setFechaProximaCuota(XMLGregorianCalendar value) {
         this.fechaProximaCuota = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad valor.
+     * 
+     */
+    public double getValor() {
+        return valor;
+    }
+
+    /**
+     * Define el valor de la propiedad valor.
+     * 
+     */
+    public void setValor(double value) {
+        this.valor = value;
     }
 
 }
