@@ -23,6 +23,12 @@
             <xsd:enumeration value="BIMENSUAL"/>
         </xsd:restriction>
     </xsd:simpleType>
+    <xsd:simpleType name="TipoDePago">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="NACIONAL"/>
+            <xsd:enumeration value="INTERNACIONAL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
     <xsd:complexType name="PagoProgramadoBase">
         <xsd:sequence>
             <xsd:element name="referencia" type="xsd:string"/>
@@ -39,6 +45,7 @@
                     <xsd:element name="periodicidad" type="Periodicidad"/>
                     <xsd:element name="fechaProximaCuota" type="xsd:date"/>
                     <xsd:element name="valor" type="xsd:double"/>
+                    <xsd:element name="tipoDePago" type="TipoDePago"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

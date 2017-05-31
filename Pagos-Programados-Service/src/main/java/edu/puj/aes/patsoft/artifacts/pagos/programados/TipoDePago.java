@@ -13,36 +13,32 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para Periodicidad.
+ * <p>Clase Java para TipoDePago.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * <p>
  * <pre>
- * &lt;simpleType name="Periodicidad">
+ * &lt;simpleType name="TipoDePago">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="SEMANAL"/>
- *     &lt;enumeration value="QUINCENAL"/>
- *     &lt;enumeration value="MENSUAL"/>
- *     &lt;enumeration value="BIMENSUAL"/>
+ *     &lt;enumeration value="NACIONAL"/>
+ *     &lt;enumeration value="INTERNACIONAL"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "Periodicidad")
+@XmlType(name = "TipoDePago")
 @XmlEnum
-public enum Periodicidad {
+public enum TipoDePago {
 
-    SEMANAL,
-    QUINCENAL,
-    MENSUAL,
-    BIMENSUAL;
+    NACIONAL,
+    INTERNACIONAL;
 
     public String value() {
         return name();
     }
 
-    public static Periodicidad fromValue(String v) {
+    public static TipoDePago fromValue(String v) {
         return valueOf(v);
     }
 

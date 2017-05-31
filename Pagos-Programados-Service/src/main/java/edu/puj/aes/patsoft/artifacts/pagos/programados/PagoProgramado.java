@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por la arquitectura JavaTM para la implantación de la referencia de enlace (JAXB) XML v2.2.8-b130911.1802 
 // Visite <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2017.05.29 a las 04:29:17 PM COT 
+// Generado el: 2017.05.30 a las 10:36:20 PM COT 
 //
 
 
@@ -33,6 +33,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="periodicidad" type="{}Periodicidad"/>
  *         &lt;element name="fechaProximaCuota" type="{http://www.w3.org/2001/XMLSchema}date"/>
  *         &lt;element name="valor" type="{http://www.w3.org/2001/XMLSchema}double"/>
+ *         &lt;element name="tipoDePago" type="{}TipoDePago"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -49,7 +50,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "estado",
     "periodicidad",
     "fechaProximaCuota",
-    "valor"
+    "valor",
+    "tipoDePago"
 })
 public class PagoProgramado
     extends PagoProgramadoBase
@@ -70,6 +72,9 @@ public class PagoProgramado
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar fechaProximaCuota;
     protected double valor;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "string")
+    protected TipoDePago tipoDePago;
 
     /**
      * Obtiene el valor de la propiedad id.
@@ -221,6 +226,30 @@ public class PagoProgramado
      */
     public void setValor(double value) {
         this.valor = value;
+    }
+
+    /**
+     * Obtiene el valor de la propiedad tipoDePago.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TipoDePago }
+     *     
+     */
+    public TipoDePago getTipoDePago() {
+        return tipoDePago;
+    }
+
+    /**
+     * Define el valor de la propiedad tipoDePago.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TipoDePago }
+     *     
+     */
+    public void setTipoDePago(TipoDePago value) {
+        this.tipoDePago = value;
     }
 
 }

@@ -12,6 +12,7 @@ import edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramado;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.PagoProgramadoBase;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.PagosProgramados;
 import edu.puj.aes.patsoft.artifacts.pagos.programados.Periodicidad;
+import edu.puj.aes.patsoft.artifacts.pagos.programados.TipoDePago;
 import edu.puj.aes.patsoft.fast.projects.utils.FilePersister;
 import edu.puj.aes.patsoft.fast.projects.utils.JSONConverter;
 import edu.puj.aes.patsoft.pagos.programados.service.exception.PagosProgramadosException;
@@ -48,31 +49,31 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 public class PagoProgramadoImpl implements PagoProgramadoLocal {
-
+    
     private static final FilePersister FILE_PERSISTER
             = new FilePersister("persistence/pagos/programados");
-
+    
     private static final String FILE_NAME = "PAGOS_PROGRAMADOS";
-
+    
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PagoProgramadoImpl.class);
-
+    
     private static final Map<String, List<PagoProgramado>> PAGOS_PROGRAMADOS = new ConcurrentHashMap<>();
-
+    
     @PostConstruct
     public void init() {
-        cargar();
+//        cargar();
         if (PAGOS_PROGRAMADOS.isEmpty()) {
             generarPagosProgramados();
         }
-
+        
     }
-
+    
     @Override
     public PagosProgramados findAllByCliente(ClienteBase input) throws PagosProgramadosException {
         validarCliente(input);
         return consultarPagosProgramados(input);
     }
-
+    
     @Override
     public PagoProgramado notificarPagoProgramado(PagoProgramadoBase input,
             ClienteBase clente) throws PagosProgramadosException {
@@ -91,7 +92,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         guardar();
         return pagoProgramado;
     }
-
+    
     @Override
     public PagoProgramado notificarPagoProgramado(PagoProgramadoBase input) throws PagosProgramadosException {
         PagoProgramado pagoProgramado_ = null;
@@ -114,7 +115,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         guardar();
         return pagoProgramado_;
     }
-
+    
     @Override
     public PagosProgramados findAllByFechaProximoPagoNow() {
         PagosProgramados pagosProgramadosResp = new PagosProgramados();
@@ -131,9 +132,9 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         });
         return pagosProgramadosResp;
     }
-
+    
     private void setSiguienteFechaPago(PagoProgramado pagoProgramado) {
-
+        
         LocalDate localDate = LocalDate.now();
         switch (pagoProgramado.getPeriodicidad()) {
             case BIMENSUAL:
@@ -149,20 +150,20 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                 localDate = localDate.plus(1, ChronoUnit.WEEKS);
                 break;
         }
-
+        
         try {
             XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
                     newXMLGregorianCalendar(GregorianCalendar.from(
                             localDate.atStartOfDay(ZoneId.systemDefault())));
             xcal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
-
+            
             pagoProgramado.setFechaProximaCuota(xcal);
         } catch (DatatypeConfigurationException ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
-
+        
     }
-
+    
     private void generarPagosProgramados() {
         System.out.println("GENERAR!!");
         PagoProgramado pagoProgramado;
@@ -177,7 +178,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                 entidad.setId(2000 + j);
                 entidad.setNombre(String.format("Empresa de servicios públicos %d", j + 1));
                 entidad.setNumeroCuenta(String.valueOf(random.nextInt(1000000)));
-
+                
                 pagoProgramado = new PagoProgramado();
                 pagoProgramado.setId(1000 + j);
                 pagoProgramado.setEntidad(entidad);
@@ -186,6 +187,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                 pagoProgramado.setPeriodicidad(Periodicidad.SEMANAL);
                 pagoProgramado.setReferencia(String.valueOf(random.nextInt(100000)));
                 pagoProgramado.setValor(random.nextInt(1000000));
+                pagoProgramado.setTipoDePago(i % 2 == 0 ? TipoDePago.NACIONAL : TipoDePago.INTERNACIONAL);
                 try {
                     XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
                             newXMLGregorianCalendar(GregorianCalendar.from(
@@ -202,7 +204,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
             PAGOS_PROGRAMADOS.put(cedulas[i], pagosProgramados);
         }
     }
-
+    
     private PagosProgramados consultarPagosProgramados(ClienteBase input) {
         PagosProgramados pagosProgramados = new PagosProgramados();
         String cedula = input.getCedula();
@@ -214,9 +216,9 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         pagosProgramados.getPagosProgramados().addAll(PAGOS_PROGRAMADOS.get(cedula));
         LOGGER.info("Se obtienen {} pagos programados.", pagosProgramados.getPagosProgramados().size());
         return pagosProgramados;
-
+        
     }
-
+    
     private void validarCliente(ClienteBase input) throws PagosProgramadosException {
         if (Objects.isNull(input)) {
             PagosProgramadosUtil.getInstance().throwException(getClass(),
@@ -227,7 +229,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                     "Se requiere el número de cédula del cliente");
         }
     }
-
+    
     private synchronized void guardar() {
         if (PAGOS_PROGRAMADOS != null && !PAGOS_PROGRAMADOS.isEmpty()) {
             HashMap<String, List<PagoProgramado>> map = new HashMap<>();
@@ -235,7 +237,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
             FILE_PERSISTER.guardar(FILE_NAME, map);
         }
     }
-
+    
     private synchronized void cargar() {
         HashMap cargar = FILE_PERSISTER.cargar(FILE_NAME, HashMap.class);
         if (cargar != null && !cargar.isEmpty()) {
@@ -246,14 +248,14 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                             getPagosProgramados((List<LinkedHashMap>) ((Entry) entry).getValue())));
         }
     }
-
+    
     private List<PagoProgramado> getPagosProgramados(List<LinkedHashMap> linkedHashMaps) {
         List<PagoProgramado> pagoProgramados = new LinkedList<>();
         linkedHashMaps.forEach(linkedHashMap
                 -> pagoProgramados.add(getPagoProgramado(linkedHashMap)));
         return pagoProgramados;
     }
-
+    
     private PagoProgramado getPagoProgramado(LinkedHashMap linkedHashMap) {
         PagoProgramado pagoProgramado = JSONConverter.getInstance().convert(PagoProgramado.class, linkedHashMap);
         XMLGregorianCalendar fechaProximaCuota = pagoProgramado.getFechaProximaCuota();
@@ -261,7 +263,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
         pagoProgramado.setFechaProximaCuota(fechaProximaCuota);
         return pagoProgramado;
     }
-
+    
     private boolean xmlGregorianCalendarNow(XMLGregorianCalendar gregorianCalendar) {
         try {
             XMLGregorianCalendar xcal = DatatypeFactory.newInstance().
@@ -270,7 +272,7 @@ public class PagoProgramadoImpl implements PagoProgramadoLocal {
                                     atStartOfDay(ZoneId.systemDefault())));
             xcal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
             LOGGER.info("Fecha a buscar: {}", xcal);
-
+            
             return gregorianCalendar.getYear() == xcal.getYear()
                     && gregorianCalendar.getMonth() == xcal.getMonth()
                     && gregorianCalendar.getDay() == xcal.getDay();

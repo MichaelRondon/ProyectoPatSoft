@@ -5,7 +5,7 @@
  */
 package edu.puj.aes.patsoft.cics.service.control;
 
-import edu.puj.aes.patsoft.fast.projects.utils.FilePersister;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -22,21 +22,22 @@ import org.slf4j.LoggerFactory;
  * @author acost
  */
 public class ConsumerMessageListener implements MessageListener {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerMessageListener.class);
-    
+    private static final AtomicInteger COUNTER = new AtomicInteger(0);
+
     private final MessageProcessor messageProcessor;
     private final Latcher latcher;
-    
+
     public ConsumerMessageListener(MessageProcessor messageProcessor, Latcher latcher) {
         this.messageProcessor = messageProcessor;
         this.latcher = latcher;
     }
-    
+
     @Override
     public void onMessage(Message message) {
         LOGGER.info("Mensaje obtenido de la cola: {}" + message);
-        
+
         try {
             if (message instanceof MapMessage) {
                 System.out.println("messageType: MapMessage");
@@ -56,9 +57,20 @@ public class ConsumerMessageListener implements MessageListener {
             } else {
                 System.out.println("NINGUNO");
             }
-            
-            messageProcessor.process(message);
-            latcher.latchCountDown();
+
+            if (COUNTER.get() == 2) {
+                System.out.println("*****ERROR DE PRUEBA*****");
+                try {
+                    ((ConnectionManager) latcher).publishMessage("procesadas", "<?xml version=\"1.0\" encoding=\"utf-8\"?><!DOCTYPE xml><transaccion><referencia></referencia><valor></valor><mensajeError>Error Dummy de prueba</mensajeError><exito>0</exito></transaccion>");
+                } catch (InterruptedException ex) {
+                    java.util.logging.Logger.getLogger(ConsumerMessageListener.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                messageProcessor.process(message);
+            }
+            if (COUNTER.getAndIncrement() == 3) {
+                latcher.latchCountDown();
+            }
         } catch (JMSException /*| IOException*/ ex) {
             String errorMessage
                     = String.format("Error procesando el mensaje: %s. error:%s",

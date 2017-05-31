@@ -24,9 +24,30 @@ public class Application {
 //            connectionManager.publishMessage("pendientes", "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 //                    + "<!DOCTYPE xml>\n"
 //                    + "<transaccion>\n"
-//                    + "  <referencia>92158</referencia>\n"
+//                    + "  <referencia>92150</referencia>\n"
+//                    + "</transaccion>");
+//            connectionManager.publishMessage("pendientes", "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+//                    + "<!DOCTYPE xml>\n"
+//                    + "<transaccion>\n"
+//                    + "  <referencia>92151</referencia>\n"
+//                    + "</transaccion>");
+//            connectionManager.publishMessage("pendientes", "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+//                    + "<!DOCTYPE xml>\n"
+//                    + "<transaccion>\n"
+//                    + "  <referencia>92152</referencia>\n"
+//                    + "</transaccion>");
+//            connectionManager.publishMessage("pendientes", "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+//                    + "<!DOCTYPE xml>\n"
+//                    + "<transaccion>\n"
+//                    + "  <referencia>92153</referencia>\n"
+//                    + "</transaccion>");
+//            connectionManager.publishMessage("pendientes", "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+//                    + "<!DOCTYPE xml>\n"
+//                    + "<transaccion>\n"
+//                    + "  <referencia>92154</referencia>\n"
 //                    + "</transaccion>");
             connectionManager.receiveAsyncMessages("pendientes", new ConsumerMessageListener(new PagoProgramadoProcessor(connectionManager), connectionManager));
+            System.exit(0);
         } catch (JMSException | InterruptedException ex) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
         }
